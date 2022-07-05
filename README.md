@@ -34,9 +34,9 @@ the first subtitle file.
 
 ### TODO
 
-Add tests, preferably using spec
-Add logging and a verbosity flag
-Maybe add a minimal GUI
+* Add tests, preferably using spec
+* Add logging and a verbosity flag
+* Maybe add a minimal GUI
 
 ## License
 
