@@ -62,7 +62,7 @@
 (defn parent-dir-path [file-obj]
   "get the path of the dir containing file-obj"
   (let [par (.getParentFile ^java.io.File file-obj)
-        path (.getPath par)]
+        path (.getPath ^java.io.File par)]
     path))
 
 (defn parent-parent-dir-path [file-obj]
@@ -72,27 +72,31 @@
         path (.getPath ^java.io.File parpar)]
     path))
 
-(defn prefix-and-obj [file-obj parentdirfn file-keyword]
-  "get a map of {:prefix /path/to/file :file-keyword File}"
-  {:prefix (parentdirfn file-obj) file-keyword file-obj})
-
-(defn files-with-prefix [lazy-file-seq parentdirfn file-keyword]
-  "execute prefix-and-obj on lazy-file-seq"
-  (map #(prefix-and-obj % parentdirfn file-keyword) lazy-file-seq))
-
-(defn subtitle-files-with-prefix [lazy-file-seq]
-  "get a map of {:prefix /path/to/subtitle :subfile File}"
-  (files-with-prefix lazy-file-seq parent-parent-dir-path :subfile))
-
-(defn video-files-with-prefix [lazy-file-seq]
-  "get a map of {:prefix /path/to/video :videofile File}"
-  (files-with-prefix lazy-file-seq parent-dir-path :videofile))
-
 (defn remove-extension [filename]
   "remove everything after the last dot of filename"
   (apply str
    (take
     (last-index-of filename ".") filename)))
+
+(defn path-noext [file-obj]
+  "hello.mp4 becomes hello"
+  (remove-extension (.getPath ^java.io.File file-obj)))
+
+(defn obj-and-join-key [file-obj file-keyword joinkeyfn]
+  "get a map of {:file-keyword File :join-key /common/path}"
+  {file-keyword file-obj :join-key (joinkeyfn file-obj)})
+
+(defn files-with-joinkey [lazy-file-seq file-keyword joinkeyfn]
+  "execute obj-and-join-key on lazy-file-seq"
+  (map #(obj-and-join-key % file-keyword joinkeyfn) lazy-file-seq))
+
+(defn subtitle-files-with-joinkey [lazy-file-seq]
+  "get a map of {:join-key /prefix/path/to/subtitle :subfile File}"
+  (files-with-joinkey lazy-file-seq :subfile parent-dir-path))
+
+(defn video-files-with-joinkey [lazy-file-seq]
+  "get a map of {:join-key /prefix/path/to/video :videofile File}"
+  (files-with-joinkey lazy-file-seq :videofile path-noext))
 
 (defn add-renamed-subtitle [file-map]
   "'extend' file-map with {:subfiledst /path/of/renamed/subtitle}"
@@ -130,8 +134,8 @@
   (cond
     (nil? args) (println "usage: sub-matcher [dir]")
     :else (let [lookupdir-path (first args)
-                subpref (subtitle-files-with-prefix (subtitle-files lookupdir-path))
-                vidpref (video-files-with-prefix (video-files lookupdir-path))
-                episodes (join subpref vidpref)
+                subs (subtitle-files-with-joinkey (subtitle-files lookupdir-path))
+                vids (video-files-with-joinkey (video-files lookupdir-path))
+                episodes (join subs vids)
                 episodes-with-subs (renamed-subtitles episodes)]
             (rename-subfiles episodes-with-subs))))

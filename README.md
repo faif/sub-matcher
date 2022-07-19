@@ -14,9 +14,9 @@ The only acceptable input argument at the moment is a directory path to search f
 
     $ java -jar sub-matcher-0.1.0-standalone.jar [DIR]
 
-The supported hierarchy is /dir/[VIDEO_FILE] /dir/[VIDEO_FILE]/[SUB_DIR]/[SUB_FILE], where:
+The supported hierarchy is /dir/[VIDEO_DIR]/[VIDEO_FILE] /dir/[VIDEO_DIR]/[SUB_DIR]/[SUB_FILE], where:
 * VIDEO_FILE ends with .avi, .mkv, mp4, .mpeg, or .mpg
-* SUB_DIR can have any name
+* VIDEO_DIR and SUB_DIR must have the same name
 * SUB_FILE ends with .sub, .srt, or .txt
 
 ## Options
@@ -29,8 +29,8 @@ java -jar sub-matcher-0.1.0-standalone.jar /tmp
 
 ### Bugs
 
-When there are > 1 subtitle files in SUB_DIR, the program fails. Need to decide what to do, maybe consider only
-the first subtitle file.
+The program works only with a specific directory structure. Here's an example:
+`/tmp/s01/s01e01/s01e01.mpg, /tmp/s01/s01e01/s1e01/en.srt, /tmp/s01/s01e02/s01e02.avi, /tmp/s01/s01e02/s01e02/en.txt`. Executing the example command line produces `/tmp/s01/s01e01/s01e01.srt, /tmp/s01/s01e02/s01e02.txt`.
 
 ### TODO
 
