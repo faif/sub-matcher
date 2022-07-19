@@ -1,7 +1,7 @@
 # sub-matcher
 
 A simple program that renames a subtitle to match the video name, and moves it to the same dir. I got tired
-of doing this manually so I decided to make it a hobby project. Plus, it helps me to learn Clojure :)
+of doing this manually so I decided to make it a hobby project. Plus, it helps me to practice Clojure :)
 
 ## Installation
 
